@@ -13,8 +13,8 @@ import java.util.List;
 @Table(name = "farmers")
 public class Farmer extends Profile {
 
-    @Column(name = "IS_GOVT_VERIFIED", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isGovtVerified;
+    @Column(name = "IS_GOVT_CERTIFIED", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isGovtCertified;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(32) DEFAULT 'ACTIVE'")
