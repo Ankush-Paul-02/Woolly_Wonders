@@ -2,14 +2,15 @@ package com.devmare.woolly_wonders.data.entity;
 
 import com.devmare.woolly_wonders.data.enums.FarmerStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Setter
 @Getter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "farmers")
 public class Farmer extends Profile {
 
@@ -22,4 +23,8 @@ public class Farmer extends Profile {
 
     @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wool> wools;
+
+    @OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
+
 }

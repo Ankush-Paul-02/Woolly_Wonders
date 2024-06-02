@@ -1,18 +1,13 @@
 package com.devmare.woolly_wonders.data.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Setter
@@ -52,7 +47,10 @@ public class Profile extends BaseEntity implements UserDetails, Principal {
     @Column(name = "ENABLED")
     private boolean isEnabled;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
     @JoinTable(
             name = "users_role",
             joinColumns = @JoinColumn(

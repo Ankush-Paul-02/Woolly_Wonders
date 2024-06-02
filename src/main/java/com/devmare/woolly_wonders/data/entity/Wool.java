@@ -3,12 +3,14 @@ package com.devmare.woolly_wonders.data.entity;
 import com.devmare.woolly_wonders.data.enums.WoolType;
 import com.devmare.woolly_wonders.data.enums.WoolVerificationStatus;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "wools")
 public class Wool extends BaseEntity {
 
