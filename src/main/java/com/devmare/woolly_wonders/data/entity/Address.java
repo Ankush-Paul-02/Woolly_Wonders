@@ -1,7 +1,10 @@
 package com.devmare.woolly_wonders.data.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Setter
@@ -9,15 +12,31 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Address")
+@Entity
 @Table(name = "address")
-public class Address extends BaseEntity {
+public class Address {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long farmerId;
+
+    @NotBlank(message = "Address cannot be blank")
     private String address;
+
+    @NotBlank(message = "City cannot be blank")
     private String city;
+
+    @NotBlank(message = "State cannot be blank")
     private String state;
+
+    @NotNull(message = "Pin code cannot be null")
+    @Digits(integer = 6, fraction = 0, message = "Pin code must be a 6-digit number")
     private Long pinCode;
+
     private String latitude;
+
     private String longitude;
 
     @Override

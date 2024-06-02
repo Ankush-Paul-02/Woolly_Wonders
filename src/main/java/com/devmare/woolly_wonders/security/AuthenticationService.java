@@ -2,10 +2,13 @@ package com.devmare.woolly_wonders.security;
 
 import com.devmare.woolly_wonders.business.dto.AuthRequestDto;
 import com.devmare.woolly_wonders.business.dto.AuthResponseDto;
+import com.devmare.woolly_wonders.business.dto.LoginRequestDto;
 import com.devmare.woolly_wonders.data.entity.Farmer;
 import com.devmare.woolly_wonders.data.entity.RefreshToken;
 import com.devmare.woolly_wonders.data.entity.Roles;
+import com.devmare.woolly_wonders.data.enums.FarmerStatus;
 import com.devmare.woolly_wonders.data.enums.Role;
+import com.devmare.woolly_wonders.data.exception.UserInfoException;
 import com.devmare.woolly_wonders.data.repository.FarmerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +36,7 @@ public class AuthenticationService {
     ) {
         Optional<Farmer> optionalFarmer = farmerRepository.findByEmail(authRequestDto.getEmail());
         if (optionalFarmer.isPresent()) {
-            throw new RuntimeException("User with email " + authRequestDto.getEmail() + " already exists");
+            throw new UserInfoException("User with email " + authRequestDto.getEmail() + " already exists");
         }
 
         Farmer farmer = new Farmer();
@@ -43,6 +46,9 @@ public class AuthenticationService {
         farmer.setAccountNonExpired(true);
         farmer.setCredentialNonExpired(true);
         farmer.setEnabled(true);
+        farmer.setName(authRequestDto.getName());
+        farmer.setStatus(FarmerStatus.ACTIVE);
+
         Set<Roles> defaultRoles = new HashSet<>();
         Roles role = new Roles();
         role.setName(Role.FARMER);
@@ -61,23 +67,23 @@ public class AuthenticationService {
     }
 
     public AuthResponseDto login(
-            AuthRequestDto authRequestDto
+            LoginRequestDto loginRequestDto
     ) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authRequestDto.getEmail(),
-                        authRequestDto.getPassword()
+                        loginRequestDto.getEmail(),
+                        loginRequestDto.getPassword()
                 )
         );
 
-        Optional<Farmer> optionalFarmer = farmerRepository.findByEmail(authRequestDto.getEmail());
+        Optional<Farmer> optionalFarmer = farmerRepository.findByEmail(loginRequestDto.getEmail());
         if (optionalFarmer.isEmpty()) {
-            throw new RuntimeException("User with email " + authRequestDto.getEmail() + " does not exist");
+            throw new UserInfoException("User with email " + loginRequestDto.getEmail() + " does not exist");
         }
 
         Farmer farmer = optionalFarmer.get();
-        if (!passwordEncoder.matches(authRequestDto.getPassword(), farmer.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), farmer.getPassword())) {
+            throw new UserInfoException("Invalid password for user with email " + loginRequestDto.getEmail());
         }
 
         String jwtToken = jwtService.createToken(new HashMap<>(), farmer);

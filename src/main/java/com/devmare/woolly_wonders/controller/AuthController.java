@@ -1,10 +1,13 @@
 package com.devmare.woolly_wonders.controller;
 
+import com.devmare.woolly_wonders.business.domain.DefaultResponse;
 import com.devmare.woolly_wonders.business.dto.AuthRequestDto;
 import com.devmare.woolly_wonders.business.dto.AuthResponseDto;
+import com.devmare.woolly_wonders.business.dto.LoginRequestDto;
 import com.devmare.woolly_wonders.business.dto.RefreshTokenRequestDto;
 import com.devmare.woolly_wonders.data.entity.Farmer;
 import com.devmare.woolly_wonders.data.entity.RefreshToken;
+import com.devmare.woolly_wonders.data.exception.UserInfoException;
 import com.devmare.woolly_wonders.security.AuthenticationService;
 import com.devmare.woolly_wonders.security.JwtService;
 import com.devmare.woolly_wonders.security.RefreshTokenService;
@@ -12,7 +15,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -35,28 +38,48 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/register")
-    public ResponseEntity<?> signUp(
-            @Valid @RequestBody AuthRequestDto authRequestDto
-    ) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody AuthRequestDto authRequestDto) {
         try {
             AuthResponseDto authResponseDto = authenticationService.registerFarmer(authRequestDto);
-            return ResponseEntity.ok(authResponseDto);
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.SUCCESS,
+                            Map.of("data", authResponseDto),
+                            "Registration successful"
+                    )
+            );
         } catch (RuntimeException e) {
             logger.error("Error during registration: ", e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.FAILED,
+                            Map.of("data", e.getMessage()),
+                            "Registration failed"
+                    )
+            );
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @Valid @RequestBody AuthRequestDto authRequestDto
-    ) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         try {
-            AuthResponseDto authResponseDto = authenticationService.login(authRequestDto);
-            return ResponseEntity.ok(authResponseDto);
+            AuthResponseDto dto = authenticationService.login(loginRequestDto);
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.SUCCESS,
+                            Map.of("data", dto),
+                            "Login successful"
+                    )
+            );
         } catch (RuntimeException e) {
             logger.error("Error during login: ", e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.FAILED,
+                            Map.of("data", e.getMessage()),
+                            "Login failed"
+                    )
+            );
         }
     }
 
@@ -67,7 +90,7 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken);
 
             if (refreshToken == null) {
-                throw new RuntimeException("Refresh token not found");
+                throw new UserInfoException("Invalid refresh token");
             }
 
             RefreshToken verifiedToken = refreshTokenService.verifyExpiration(refreshToken);
@@ -75,13 +98,29 @@ public class AuthController {
             Farmer farmer = refreshToken.getFarmer();
             String newJwtToken = jwtService.createToken(new HashMap<>(), farmer);
 
-            return ResponseEntity.ok(AuthResponseDto.builder()
+            AuthResponseDto authResponseDto = AuthResponseDto
+                    .builder()
                     .jwtToken(newJwtToken)
                     .refreshToken(verifiedToken.getToken())
-                    .build());
+                    .build();
+
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.SUCCESS,
+                            Map.of("data", authResponseDto),
+                            "Token refresh successful"
+                    )
+            );
+
         } catch (RuntimeException e) {
             logger.error("Error during token refresh: ", e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(
+                    new DefaultResponse(
+                            DefaultResponse.Status.FAILED,
+                            Map.of("data", e.getMessage()),
+                            "Token refresh failed"
+                    )
+            );
         }
     }
 }

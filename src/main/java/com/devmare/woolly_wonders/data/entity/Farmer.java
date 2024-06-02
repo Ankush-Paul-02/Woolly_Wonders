@@ -18,7 +18,7 @@ public class Farmer extends Profile {
     private boolean isGovtCertified;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(32) DEFAULT 'ACTIVE'")
+    @Column(name = "STATUS")
     private FarmerStatus status;
 
     @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
