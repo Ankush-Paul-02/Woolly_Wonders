@@ -1,6 +1,7 @@
 package com.devmare.woolly_wonders.data.entity;
 
 import com.devmare.woolly_wonders.data.enums.FarmerStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,5 +27,10 @@ public class Farmer extends Profile {
 
     @OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
+
+    @OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private Address address;
 
 }

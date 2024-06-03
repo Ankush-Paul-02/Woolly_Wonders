@@ -25,7 +25,12 @@ public class AddressServiceImpl implements AddressService {
         if (optionalFarmer.isEmpty()) {
             throw new UserInfoException("Farmer not found");
         }
-        address.setFarmerId(farmerId);
-        return addressRepository.save(address);
+        Farmer farmer = optionalFarmer.get();
+        address.setFarmer(farmer);
+        farmer.setAddress(address);
+        addressRepository.save(address);
+        farmerRepository.save(farmer);
+
+        return address;
     }
 }
