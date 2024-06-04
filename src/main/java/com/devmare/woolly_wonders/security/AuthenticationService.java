@@ -31,9 +31,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponseDto registerFarmer(
-            AuthRequestDto authRequestDto
-    ) {
+    public AuthResponseDto registerFarmer(AuthRequestDto authRequestDto) {
         Optional<Farmer> optionalFarmer = farmerRepository.findByEmail(authRequestDto.getEmail());
         if (optionalFarmer.isPresent()) {
             throw new UserInfoException("User with email " + authRequestDto.getEmail() + " already exists");
@@ -59,22 +57,11 @@ public class AuthenticationService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(savedFarmer.getUsername());
         String jwtToken = jwtService.createToken(new HashMap<>(), savedFarmer);
 
-        return AuthResponseDto
-                .builder()
-                .jwtToken(jwtToken)
-                .refreshToken(refreshToken.getToken())
-                .build();
+        return AuthResponseDto.builder().jwtToken(jwtToken).refreshToken(refreshToken.getToken()).build();
     }
 
-    public AuthResponseDto login(
-            LoginRequestDto loginRequestDto
-    ) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequestDto.getEmail(),
-                        loginRequestDto.getPassword()
-                )
-        );
+    public AuthResponseDto login(LoginRequestDto loginRequestDto) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
 
         Optional<Farmer> optionalFarmer = farmerRepository.findByEmail(loginRequestDto.getEmail());
         if (optionalFarmer.isEmpty()) {
@@ -87,10 +74,6 @@ public class AuthenticationService {
         }
 
         String jwtToken = jwtService.createToken(new HashMap<>(), farmer);
-        return AuthResponseDto
-                .builder()
-                .jwtToken(jwtToken)
-                .refreshToken(farmer.getRefreshToken().getToken())
-                .build();
+        return AuthResponseDto.builder().jwtToken(jwtToken).refreshToken(farmer.getRefreshToken().getToken()).build();
     }
 }
