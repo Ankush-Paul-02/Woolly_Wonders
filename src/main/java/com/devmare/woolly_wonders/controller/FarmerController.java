@@ -31,4 +31,28 @@ public class FarmerController {
                 )
         );
     }
+
+    @GetMapping("/{farmerId}")
+    public ResponseEntity<DefaultResponse> getFarmerById(
+            @PathVariable Long farmerId
+    ) {
+        return ResponseEntity.ok(
+                new DefaultResponse(
+                        DefaultResponse.Status.SUCCESS,
+                        Map.of("farmer", farmerService.getFarmerById(farmerId)),
+                        "Farmer fetched successfully"
+                )
+        );
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<DefaultResponse> getAllFarmers() {
+        return ResponseEntity.ok(
+                new DefaultResponse(
+                        DefaultResponse.Status.SUCCESS,
+                        Map.of("farmers", farmerService.getAllFarmers()),
+                        "Farmers fetched successfully"
+                )
+        );
+    }
 }

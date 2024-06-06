@@ -1,5 +1,6 @@
 package com.devmare.woolly_wonders.configuration;
 
+import com.devmare.woolly_wonders.data.exception.UserInfoException;
 import com.devmare.woolly_wonders.data.repository.FarmerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,7 @@ public class ApplicationConfig {
         return username -> farmerRepository
                 .findByEmail(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found")
+                        () -> new UserInfoException("User not found")
                 );
     }
 

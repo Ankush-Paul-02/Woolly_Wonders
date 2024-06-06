@@ -8,6 +8,7 @@ import com.devmare.woolly_wonders.data.repository.AddressRepository;
 import com.devmare.woolly_wonders.data.repository.FarmerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,18 +20,19 @@ public class AddressServiceImpl implements AddressService {
     private final FarmerRepository farmerRepository;
 
     @Override
+    @Transactional
     public Address createAddress(Long farmerId, Address address) {
-
         Optional<Farmer> optionalFarmer = farmerRepository.findById(farmerId);
         if (optionalFarmer.isEmpty()) {
             throw new UserInfoException("Farmer not found");
         }
-        Farmer farmer = optionalFarmer.get();
-        address.setFarmer(farmer);
-        farmer.setAddress(address);
-        addressRepository.save(address);
-        farmerRepository.save(farmer);
 
-        return address;
+        Farmer farmer = optionalFarmer.get();
+        Address newAddress = addressRepository.save(address);
+        farmer.setAddress(address);
+
+        farmerRepository.save(farmer);
+        return newAddress;
     }
+
 }

@@ -1,10 +1,10 @@
 package com.devmare.woolly_wonders.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,8 +16,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "address")
+@Table(name = "addresses")
 public class Address extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank(message = "Address cannot be blank")
     private String address;
@@ -35,11 +39,6 @@ public class Address extends BaseEntity {
     private String latitude;
 
     private String longitude;
-
-    @OneToOne
-    @JoinColumn(name = "farmer_id")
-    @JsonBackReference
-    private Farmer farmer;
 
     @Override
     public String toString() {
