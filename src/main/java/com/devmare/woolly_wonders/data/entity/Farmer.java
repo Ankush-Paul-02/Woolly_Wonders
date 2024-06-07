@@ -24,6 +24,7 @@ public class Farmer extends Profile {
     private FarmerStatus status;
 
     @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Wool> wools;
 
     @OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
