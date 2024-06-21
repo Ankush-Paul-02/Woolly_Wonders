@@ -33,4 +33,34 @@ public class WoolController {
                 )
         );
     }
+
+    @GetMapping("/farmer/{farmerId}")
+    public ResponseEntity<DefaultResponse> getWoolsByFarmerId(
+            @PathVariable Long farmerId
+    ) {
+        return ResponseEntity.ok(
+                new DefaultResponse(
+                        DefaultResponse.Status.SUCCESS,
+                        Map.of(
+                                "wools",
+                                woolService.getWoolsByFarmerId(farmerId)
+                        ),
+                        "Wools retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<DefaultResponse> getAllWools() {
+        return ResponseEntity.ok(
+                new DefaultResponse(
+                        DefaultResponse.Status.SUCCESS,
+                        Map.of(
+                                "wools",
+                                woolService.getAllWools()
+                        ),
+                        "Wools retrieved successfully"
+                )
+        );
+    }
 }

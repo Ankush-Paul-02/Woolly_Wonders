@@ -11,6 +11,7 @@ import com.devmare.woolly_wonders.data.repository.WoolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.devmare.woolly_wonders.data.enums.WoolVerificationStatus.NOT_APPLIED;
@@ -52,5 +53,20 @@ public class WoolSeriveImpl implements WoolService {
         farmer.getWools().add(newWool);
         farmerRepository.save(farmer);
         return newWool;
+    }
+
+    @Override
+    public List<Wool> getWoolsByFarmerId(Long farmerId) {
+        Optional<Farmer> optionalFarmer = farmerRepository.findById(farmerId);
+        if (optionalFarmer.isEmpty()) {
+            throw new UserInfoException("Farmer not found");
+        }
+        Farmer farmer = optionalFarmer.get();
+        return farmer.getWools();
+    }
+
+    @Override
+    public List<Wool> getAllWools() {
+        return woolRepository.findAll();
     }
 }

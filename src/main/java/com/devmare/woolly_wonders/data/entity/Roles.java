@@ -11,11 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @Table
 @Entity(name = "roles")
-public class Roles {
+public class Roles extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Enumerated(EnumType.STRING)
     private Role name;
 }
